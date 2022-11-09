@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  nginx:
+    build: ./docker-images/nginx-custom
+    container_name: nginx
+    restart: unless-stopped
+    tty: true
+    environment:
+      SSL_SELF_HOSTED: true
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - ./ssl:/ssl
+      - ./docker-images/nginx-custom/conf:/etc/nginx/conf.d
+      - ./docker-images/nginx-custom/snippets:/etc/nginx/snippets
+      - ./www/:/var/www
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    name: app-network
+    driver: bridge
