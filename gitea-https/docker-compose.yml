@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  server:
+    build: ./docker-images/gitea-custom
+    container_name: gitea
+    restart: unless-stopped
+    tty: true
+    environment:
+      - USER_UID=1000
+      - USER_GID=1000
+      - SSL_SELF_HOSTED=true
+    ports:
+      - 3000:3000
+      - 443:443
+      - 222:22
+    volumes:
+      - ./data:/data
+      - ./ssl:/ssl
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    name: app-network
+    driver: bridge
