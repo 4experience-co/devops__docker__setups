@@ -7,14 +7,16 @@ services:
     restart: unless-stopped
     tty: true
     environment:
-      SSL_SELF_HOSTED: true
+      DOMAIN: ""
+      # DOMAIN: "rnd.4experience.co"
     ports:
       - 80:80
       - 443:443
     volumes:
-      - ./ssl:/ssl
-      - ./docker-images/nginx-custom/conf:/etc/nginx/conf.d
+      - ./docker-images/nginx-custom/conf:/etc/nginx/available-confs
       - ./docker-images/nginx-custom/snippets:/etc/nginx/snippets
+      - ./data/letsencrypt:/etc/letsencrypt/live
+      - ./data/self-signed:/etc/self-signed
       - ./www/:/var/www
     networks:
       - app-network

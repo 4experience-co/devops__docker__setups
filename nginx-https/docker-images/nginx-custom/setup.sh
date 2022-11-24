@@ -1,9 +1,10 @@
 #!/bin/bash
 
-SSL_SELF_HOSTED=${SSL_SELF_HOSTED}
+DOMAIN=${DOMAIN:=""}
 
-if ($SSL_SELF_HOSTED == true)
+if [ "$DOMAIN" = "" ]
 then
+    echo "No DOMAIN environment variable value."
     echo "Using self-hosted SSL certifacte..."
 
     if  [ ! -f /ssl/.lock ]
@@ -15,15 +16,23 @@ then
             mkdir /ssl
         fi
 
-        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /ssl/self-signed.key -out /ssl/self-signed.cert -subj "/C=PL"
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/self-signed/privkey.pem -out /etc/self-signed/fullchain.pem -subj "/C=PL"
         
         # Uncomment to use dhparam
         # openssl dhparam -out /ssl/dhparam.pem 4096
         
-        chmod 755 /ssl/self-signed.cert /ssl/self-signed.key
+        chmod 755 /etc/self-signed/fullchain.pem /etc/self-signed/privkey.pem
 
-        touch /ssl/.lock
+        touch /etc/self-signed/.lock
     fi
+
+    cp /etc/nginx/available-confs/nginx-self-signed.conf /etc/nginx/conf.d/nginx.conf
+else
+    echo "DOMAIN: $DOMAIN"
+    
+    certbot certonly --standalone --domains $DOMAIN --non-interactive --email 'sebastian.stryczek@4experience.co' --agree-tos
+
+    cp /etc/nginx/available-confs/nginx-letsencrypt.conf /etc/nginx/conf.d/nginx.conf
 fi
 
 exec "$@"
