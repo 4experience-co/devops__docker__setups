@@ -10,15 +10,16 @@ services:
       USER_UID: 1000
       USER_GID: 1000
       DOMAINS: ""
-      # DOMAINS: "rnd.4experience.co"
+      # DOMAINS: "git.4experience.co"
     ports:
-      - 3000:3000
+      - 80:80
       - 443:443
-      - 222:22
+      - 2222:2222
     volumes:
       - ./data:/data
       - ./data/letsencrypt:/etc/letsencrypt
       - ./data/self-signed:/etc/self-signed
+      - ./conf:/conf
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     networks:

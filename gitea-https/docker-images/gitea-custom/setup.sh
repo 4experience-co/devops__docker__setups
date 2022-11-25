@@ -5,6 +5,16 @@ echo "Current directory:" $(pwd)
 
 DOMAINS=${DOMAINS:=""}
 
+if [ ! -d /data/gitea ]
+then
+    mkdir /data/gitea
+fi
+
+if [ ! -d /data/gitea/conf ]
+then
+    mkdir /data/gitea/conf
+fi
+
 if [ "$DOMAINS" = "" ]
 then
     echo "No DOMAINS environment variable value."
@@ -24,7 +34,10 @@ then
         touch /etc/self-signed/.lock
     fi
 
-    cp /data/conf/app-self-signed.ini /data/gitea/conf/app.ini
+    if [ ! -f /data/gitea/conf/app.ini ]
+    then
+        cp /conf/app-self-signed.ini /data/gitea/conf/app.ini
+    fi
 else
     echo "DOMAINS: $DOMAINS"
     
@@ -32,10 +45,18 @@ else
     then
         certbot certonly --standalone --cert-name domains --domains $DOMAINS --non-interactive --email 'sebastian.stryczek@4experience.co' --agree-tos
 
+        chmod -R 755 /etc/letsencrypt
+        
         touch /etc/letsencrypt/.lock
     fi
 
-    cp /data/conf/app-letsencrypt.ini /data/gitea/conf/app.ini
+    if [ ! -f /data/gitea/conf/app.ini ]
+    then
+        cp /conf/app-letsencrypt.ini /data/gitea/conf/app.ini
+    fi
 fi
+
+chown -R 1000:1000 /data
+chmod -R 755 /data
 
 exec /usr/bin/entrypoint "$@"
