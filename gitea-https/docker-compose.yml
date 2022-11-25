@@ -7,16 +7,18 @@ services:
     restart: unless-stopped
     tty: true
     environment:
-      - USER_UID=1000
-      - USER_GID=1000
-      - SSL_SELF_HOSTED=true
+      USER_UID: 1000
+      USER_GID: 1000
+      DOMAINS: ""
+      # DOMAINS: "rnd.4experience.co"
     ports:
       - 3000:3000
       - 443:443
       - 222:22
     volumes:
       - ./data:/data
-      - ./ssl:/ssl
+      - ./data/letsencrypt:/etc/letsencrypt
+      - ./data/self-signed:/etc/self-signed
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     networks:

@@ -14,11 +14,6 @@ then
     then
         echo "Generating self-hosted SSL certifacte..."
 
-        if  [ ! -d /ssl ]
-        then
-            mkdir /ssl
-        fi
-
         openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/self-signed/privkey.pem -out /etc/self-signed/fullchain.pem -subj "/C=PL"
         
         # Uncomment to use dhparam

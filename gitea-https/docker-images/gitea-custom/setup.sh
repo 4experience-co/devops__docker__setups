@@ -1,29 +1,41 @@
 #!/bin/bash
 
-SSL_SELF_HOSTED=${SSL_SELF_HOSTED}
+echo "Running: setup.sh"
+echo "Current directory:" $(pwd)
 
-if ($SSL_SELF_HOSTED == true)
+DOMAINS=${DOMAINS:=""}
+
+if [ "$DOMAINS" = "" ]
 then
+    echo "No DOMAINS environment variable value."
     echo "Using self-hosted SSL certifacte..."
 
-    if  [ ! -f /ssl/.lock ]
+    if  [ ! -f /etc/self-signed/.lock ]
     then
         echo "Generating self-hosted SSL certifacte..."
 
-        if  [ ! -d /ssl ]
-        then
-            mkdir /ssl
-        fi
-
-        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /ssl/self-signed.key -out /ssl/self-signed.cert -subj "/C=PL"
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/self-signed/privkey.pem -out /etc/self-signed/fullchain.pem -subj "/C=PL"
         
         # Uncomment to use dhparam
         # openssl dhparam -out /ssl/dhparam.pem 4096
         
-        chmod 755 /ssl/self-signed.cert /ssl/self-signed.key
+        chmod 755 /etc/self-signed/fullchain.pem /etc/self-signed/privkey.pem
 
-        touch /ssl/.lock
+        touch /etc/self-signed/.lock
     fi
+
+    cp /data/conf/app-self-signed.ini /data/gitea/conf/app.ini
+else
+    echo "DOMAINS: $DOMAINS"
+    
+    if  [ ! -f /etc/letsencrypt/.lock ]
+    then
+        certbot certonly --standalone --cert-name domains --domains $DOMAINS --non-interactive --email 'sebastian.stryczek@4experience.co' --agree-tos
+
+        touch /etc/letsencrypt/.lock
+    fi
+
+    cp /data/conf/app-letsencrypt.ini /data/gitea/conf/app.ini
 fi
 
 exec /usr/bin/entrypoint "$@"

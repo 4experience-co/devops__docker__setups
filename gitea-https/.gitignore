@@ -1,2 +1,3 @@
-data
-ssl
+data/git
+data/letsencrypt
+data/self-signed
