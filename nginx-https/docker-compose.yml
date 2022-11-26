@@ -16,8 +16,8 @@ services:
       - ./docker-images/nginx-custom/conf:/etc/nginx/available-confs
       - ./docker-images/nginx-custom/snippets:/etc/nginx/snippets
       - ./www/:/var/www
-      - ./data/letsencrypt:/etc/letsencrypt
-      - ./data/self-signed:/etc/self-signed
+      - ./ssl/letsencrypt:/etc/letsencrypt
+      - ./ssl/self-signed:/etc/self-signed
     networks:
       - app-network
 

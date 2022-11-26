@@ -17,9 +17,9 @@ services:
       - 2222:2222
     volumes:
       - ./data:/data
-      - ./data/letsencrypt:/etc/letsencrypt
-      - ./data/self-signed:/etc/self-signed
-      - ./conf:/conf
+      - ./ssl/letsencrypt:/etc/letsencrypt
+      - ./ssl/self-signed:/etc/self-signed
+      - ./docker-images/gitea-custom/conf:/conf
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     networks:
